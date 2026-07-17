@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function IpLookupTool() {
   const [ipInput, setIpInput] = useState('');
@@ -8,6 +8,23 @@ export default function IpLookupTool() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  useEffect(() => {
+  // Déclenche une recherche automatique à vide pour cibler l'IP du visiteur au chargement
+  const initLookup = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/lookup?ip=');
+      const data = await res.json();
+      if (res.ok) setResult(data);
+    } catch (err) {
+      // On reste silencieux au chargement initial si ça échoue
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  initLookup();
+}, []);
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
